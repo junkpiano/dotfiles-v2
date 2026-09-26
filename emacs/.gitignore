@@ -1,0 +1,10 @@
+# Emacs writes these next to init.el when this directory is ~/.emacs.d
+elpa/
+eln-cache/
+auto-save-list/
+package-quickstart.el
+recentf
+places
+history
+transient/
+url/
