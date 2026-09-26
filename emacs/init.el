@@ -52,3 +52,26 @@
 (with-eval-after-load 'org
   (setopt org-log-done 'time
           org-table-number-fraction 3))
+
+;; --- C-c r: review pull request N (fetched as pr/N) as one read-only diff, like the PR page ---
+(defun my/pr-review (n)
+  "Fetch pull request N as pr/N and show it as one diff, like the PR page."
+  (interactive "nPull request number: ")
+  (let* ((root (or (locate-dominating-file default-directory ".git")
+                   (user-error "Not in a git repository")))
+         (default-directory root)
+         (base (string-trim (shell-command-to-string
+                             "git symbolic-ref --quiet --short refs/remotes/origin/HEAD || echo origin/main")))
+         (buf (get-buffer-create (format "*PR %d*" n))))
+    (unless (zerop (call-process "git" nil nil nil "fetch" "-f" "origin" (format "pull/%d/head:pr/%d" n n)))
+      (user-error "Could not fetch pull request %d" n))
+    (with-current-buffer buf
+      (setq default-directory root)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (call-process "git" nil t nil "diff" (format "%s...pr/%d" base n)))
+      (diff-mode)
+      (read-only-mode 1)                    ; so n, p, o, k work
+      (goto-char (point-min)))
+    (pop-to-buffer buf)))
+(global-set-key (kbd "C-c r") #'my/pr-review)

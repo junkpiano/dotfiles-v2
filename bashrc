@@ -82,6 +82,7 @@ gpr() { [[ "${1:-}" =~ ^[0-9]+$ ]] || { echo "usage: gpr <number>" >&2; return 1
   local base; base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD || echo origin/main)
   git fetch -f origin "pull/$1/head:pr/$1" && git diff --stat "$base...pr/$1" &&
   { if command -v tig >/dev/null; then tig "$base..pr/$1"; else git log -p "$base..pr/$1"; fi; }; }
+epr() { [[ "${1:-}" =~ ^[0-9]+$ ]] || { echo "usage: epr <number>" >&2; return 1; }; emacs -nw --eval "(my/pr-review $1)"; }   # PR as a diff in Emacs
 __pr_title() { local u t; u=$(git remote get-url origin)
   if [[ "$u" == *github.com* ]]; then t=$(gh pr view "$1" --json title -q .title 2>/dev/null)
   else t=$(tea pr ls --repo "$(sed -E 's#^.*[:/]([^/]+/[^/]+)$#\1#; s#\.git$##' <<< "$u")" --state all --limit 100 --fields index,title --output tsv 2>/dev/null | awk -F'\t' -v n="$1" '$1==n {print $2; exit}'); fi
