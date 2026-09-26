@@ -7,21 +7,23 @@
   (unless (package-installed-p p)
     (unless package-archive-contents (package-refresh-contents))
     (package-install p)))
-(setq use-package-always-defer t)
+(setopt use-package-always-defer t)
 
 ;; --- built-ins ---
 (fido-vertical-mode 1)                   ; vertical candidates for C-x C-f, M-x, C-x b
 (which-key-mode 1)                       ; after a prefix key, show what comes next
 (recentf-mode 1)                         ; M-x recentf-open: files opened before
 (save-place-mode 1)                      ; reopen a file where you left it
-(setq auto-revert-verbose nil
-      global-auto-revert-non-file-buffers t)
+(setopt auto-revert-verbose nil
+        global-auto-revert-non-file-buffers t)
 (global-auto-revert-mode 1)              ; follow files (and dired) as the AI changes them on disk
-(setq dired-listing-switches "-alh --group-directories-first"
-      dired-kill-when-opening-new-dired-buffer t)
+(setopt dired-listing-switches "-alh --group-directories-first"
+        dired-kill-when-opening-new-dired-buffer t)
+(declare-function dired-hide-details-mode "dired")
 (add-hook 'dired-mode-hook #'dired-hide-details-mode) ; "(" shows sizes and dates
 
 ;; --- Markdown: .md opens read-only and rendered in place (M-x gfm-mode to edit) ---
+(declare-function markdown-toggle-markup-hiding "markdown-mode")
 (use-package markdown-mode
   :mode ("\\.md\\'" . gfm-view-mode)
   :hook (gfm-view-mode . (lambda () (markdown-toggle-markup-hiding 1))) ; hide #, **, ``` only when reading
@@ -48,5 +50,5 @@
 
 ;; Org (built in) settings apply when an .org file is first opened
 (with-eval-after-load 'org
-  (setq org-log-done 'time
-        org-table-number-fraction 3))
+  (setopt org-log-done 'time
+          org-table-number-fraction 3))

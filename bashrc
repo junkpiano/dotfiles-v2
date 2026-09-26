@@ -1,7 +1,7 @@
 # -*- mode: sh; sh-shell: bash -*-
 # vim: set filetype=bash:
 # ~/.bashrc on every machine (WSL, Pi, macOS). Per-machine bits: ~/.bash_aliases or ~/.bashrc.local.
-# shellcheck shell=bash
+# shellcheck shell=bash disable=SC1090,SC1091  # sources optional files that may not exist here
 
 [[ $- == *i* ]] || return   # scripts and scp: nothing below applies
 
@@ -42,8 +42,8 @@ for f in /usr/lib/git-core/git-sh-prompt "${HOMEBREW_PREFIX:-/nonexistent}/etc/b
   if [[ -r "$f" ]]; then . "$f"; break; fi
 done
 unset f
-GIT_PS1_SHOWDIRTYSTATE=1
-GIT_PS1_SHOWUPSTREAM=auto
+# shellcheck disable=SC2034  # read by __git_ps1
+GIT_PS1_SHOWDIRTYSTATE=1 GIT_PS1_SHOWUPSTREAM=auto
 __prompt() {
   local status=$? branch=''
   declare -F __git_ps1 >/dev/null && branch=$(__git_ps1 ' (%s)')

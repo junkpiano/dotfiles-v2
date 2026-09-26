@@ -7,7 +7,7 @@
       inhibit-startup-echo-area-message (user-login-name))
 
 ;; Activate packages from one pre-built file (faster startup; rebuilt when packages change)
-(setq package-quickstart t)
+(setopt package-quickstart t)
 
 ;; No backup~, #autosave#, or .#lock files next to the originals
 (setq make-backup-files nil
