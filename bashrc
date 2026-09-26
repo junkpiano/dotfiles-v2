@@ -84,7 +84,7 @@ epr() { [[ "${1:-}" =~ ^[0-9]+$ ]] || { echo "usage: epr <number>" >&2; return 1
 __pr_title() { local u t; u=$(git remote get-url origin)
   if [[ "$u" == *github.com* ]]; then t=$(gh pr view "$1" --json title -q .title 2>/dev/null)
   else t=$(tea pr ls --repo "$(sed -E 's#^.*[:/]([^/]+/[^/]+)$#\1#; s#\.git$##' <<< "$u")" --state all --limit 100 --fields index,title --output tsv 2>/dev/null | awk -F'\t' -v n="$1" '$1==n {print $2; exit}'); fi
-  [[ -n "$t" ]] && echo "$t (#$1)"; }
+  [[ -n "$t" ]] && echo "$t"; }   # no (#n): GitHub would link it to its own issue n
 # gsquash <branch|PR number>: squash it onto an up-to-date main as one commit signed with your key; edit the message; push yourself.
 # With a number, the message starts from the PR's title (gh for GitHub, tea for Gitea).
 gsquash() { local ref="${1:-}" title=""; [[ -n "$ref" ]] || { echo "usage: gsquash <branch|PR number>" >&2; return 1; }
