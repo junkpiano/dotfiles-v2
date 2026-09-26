@@ -41,14 +41,11 @@ From `bashrc`. Aliases work only in an interactive shell; scripts get the plain 
 | Name | Does | Notes |
 |------|------|-------|
 | `ls` | `ls -F --color=auto` (`ls -FG` on macOS) | marks directories and links |
-| `ll`, `la` | `ls -alh`, `ls -A` | |
 | `grep` | `grep --color=auto` | |
 | `cp`, `mv` | `cp -i`, `mv -i` | ask before overwriting |
 | `rm` | `rm -I --preserve-root=all` (`rm -i` on macOS) | asks before deleting many files or recursing |
-| `g` | `git` | |
 | `gst` | `git status -sb` | short, with the branch and ahead/behind |
 | `gco` | `git checkout` | Tab completes branch names |
-| `glol` | `git log --graph` with one line per commit | |
 | `ggpush` | `git push -u origin <current branch>` | tracks on the first push; extra options pass through |
 | `ggpull` | `git pull --ff-only origin <current branch>` | stops instead of making a merge commit |
 | `gbda` | delete local branches merged into `main` | uses `git branch -d`; squash-merged branches stay |

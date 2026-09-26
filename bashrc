@@ -67,13 +67,11 @@ else
   alias rm='rm -I --preserve-root=all'   # ask before deleting many files or recursing
 fi
 alias cp='cp -i' mv='mv -i' grep='grep --color=auto'
-alias ll='ls -alh' la='ls -A' g=git
 
 # --- git, with oh-my-zsh's names; extra options pass through (ggpush --force-with-lease) ---
 alias gst='git status -sb' gco='git checkout'   # gst: short, with the branch and ahead/behind
 if [[ -r /usr/share/bash-completion/completions/git ]]; then . /usr/share/bash-completion/completions/git; __git_complete gco _git_checkout; fi # Tab after gco: branch names
 gbda() { git branch --merged main | grep -vE '^[*+]|^ *main$' | xargs -r git branch -d; }   # delete branches merged into main (not squash-merged ones)
-alias glol="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'"
 __git_branch() { git symbolic-ref --quiet --short HEAD || { echo "not on a branch" >&2; return 1; }; }
 ggpush() { local b; b=$(__git_branch) || return; git push -u origin "$b" "$@"; }        # -u: track on first push
 ggpull() { local b; b=$(__git_branch) || return; git pull --ff-only origin "$b" "$@"; } # never a surprise merge
