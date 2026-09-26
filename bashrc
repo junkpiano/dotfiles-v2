@@ -89,9 +89,9 @@ __pr_title() { local u t; u=$(git remote get-url origin)
 # With a number, the message starts from the PR's title (gh for GitHub, tea for Gitea).
 gsquash() { local ref="${1:-}" title=""; [[ -n "$ref" ]] || { echo "usage: gsquash <branch|PR number>" >&2; return 1; }
   [[ -z "$(git status --porcelain)" ]] || { echo "commit or stash your changes first" >&2; return 1; }
+  git switch main && git pull --ff-only || return   # first, so a checked-out pr/N can be fetched again
   if [[ "$ref" =~ ^[0-9]+$ ]]; then git fetch -f origin "pull/$ref/head:pr/$ref" || return; title=$(__pr_title "$ref"); ref="pr/$ref"; fi
-  git switch main && git pull --ff-only && git merge --squash "$ref" &&
-  git commit -S -e -m "${title:-$(git log --reverse --format=%s "main..$ref" | head -1)}" -m "$(git log --reverse --format='- %s' "main..$ref")"; }
+  git merge --squash "$ref" && git commit -S -e -m "${title:-$(git log --reverse --format=%s "main..$ref" | head -1)}" -m "$(git log --reverse --format='- %s' "main..$ref")"; }
 
 # --- per-machine: aliases, then private overrides (neither is in this repo) ---
 if [[ -r "$HOME/.bash_aliases" ]]; then . "$HOME/.bash_aliases"; fi
