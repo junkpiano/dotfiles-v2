@@ -46,6 +46,8 @@ From `bashrc`. Aliases work only in an interactive shell; scripts get the plain 
 | `rm` | `rm -I --preserve-root=all` (`rm -i` on macOS) | asks before deleting many files or recursing |
 | `gst` | `git status -sb` | short, with the branch and ahead/behind |
 | `gco` | `git checkout` | Tab completes branch names |
+| `gc` | `git commit` | options pass through (`gc -m ...`, `gc -a`); Tab completes them |
+| `gc!` | `git commit --amend` | redo the last commit; `gc! --no-edit` keeps its message |
 | `ggpush` | `git push -u origin <current branch>` | tracks on the first push; extra options pass through |
 | `ggpull` | `git pull --ff-only origin <current branch>` | stops instead of making a merge commit |
 | `gbda` | delete local branches merged into `main` | uses `git branch -d`; squash-merged branches stay |

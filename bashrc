@@ -69,8 +69,8 @@ fi
 alias cp='cp -i' mv='mv -i' grep='grep --color=auto'
 
 # --- git, with oh-my-zsh's names; extra options pass through (ggpush --force-with-lease) ---
-alias gst='git status -sb' gco='git checkout'   # gst: short, with the branch and ahead/behind
-if [[ -r /usr/share/bash-completion/completions/git ]]; then . /usr/share/bash-completion/completions/git; __git_complete gco _git_checkout; fi # Tab after gco: branch names
+alias gst='git status -sb' gco='git checkout' gc='git commit' gc!='git commit --amend'   # gst: short, with the branch and ahead/behind
+if [[ -r /usr/share/bash-completion/completions/git ]]; then . /usr/share/bash-completion/completions/git; __git_complete gco _git_checkout; __git_complete gc _git_commit; __git_complete gc! _git_commit; fi # Tab after gco: branch names; after gc, gc!: options
 gbda() { git branch --merged main | grep -vE '^[*+]|^ *main$' | xargs -r git branch -d; }   # delete branches merged into main (not squash-merged ones)
 __git_branch() { git symbolic-ref --quiet --short HEAD || { echo "not on a branch" >&2; return 1; }; }
 ggpush() { local b; b=$(__git_branch) || return; git push -u origin "$b" "$@"; }        # -u: track on first push
