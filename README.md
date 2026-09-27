@@ -50,6 +50,7 @@ From `bashrc`. Aliases work only in an interactive shell; scripts get the plain 
 | `ggpull` | `git pull --ff-only origin <current branch>` | stops instead of making a merge commit |
 | `gbda` | delete local branches merged into `main` | uses `git branch -d`; squash-merged branches stay |
 | `gpr <n>` | fetch pull request `<n>` as `pr/<n>`, list its files, browse it in tig | GitHub and Gitea |
+| `epr <n>` | fetch pull request `<n>` as `pr/<n>` and open it in Emacs as one read-only diff, like the PR page | the same as `C-c r` inside Emacs; `n` / `p` move between hunks, `o` opens the file |
 | `gsquash <branch\|n>` | squash a branch or pull request onto an up-to-date `main` as one commit signed with your key | opens the editor (message from the PR title with a number); does not push; then `gship <n>` |
 | `gship <n>` | after `gsquash <n>`, on `main`: push `main`, mark PR `<n>` merged (Gitea: manually merged with the squash commit; GitHub: closed with a comment), delete its branch here and on the remote | the branch is the one pointing at the PR's head commit, never `main`; Gitea repos need "allow manual merge" on, else the PR is just closed |
 | `gf <pattern> [dir]` | search files under `dir` (default `.`), narrow the hits in fzf, open the chosen line in Emacs | skips `.git` and binary files; preview shows the lines around; Esc cancels |
