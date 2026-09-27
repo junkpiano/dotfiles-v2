@@ -11,7 +11,7 @@ breaks, but the feature in the second column needs it.
 |------|----------|-----------------|
 | git | everything; the branch in the prompt (`git-sh-prompt`) | `sudo apt install git` |
 | bash-completion | Tab completion, branch names after `gco` | `sudo apt install bash-completion` |
-| fzf | Ctrl-R history, Ctrl-T files, Alt-C dirs; `grep ... \| fzf` to narrow results | `sudo apt install fzf` |
+| fzf | Ctrl-R history, Ctrl-T files, Alt-C dirs; `gf` | `sudo apt install fzf` |
 | tig | browsing history; `gpr` (falls back to `git log -p`) | `sudo apt install tig` |
 | tea | Gitea from the shell: pull requests, issues, repositories; PR titles for `gsquash <n>` | release binary from gitea.com (see below) |
 | gh | GitHub from the shell; PR titles for `gsquash <n>` on GitHub remotes | `sudo apt install gh`, then `gh auth login` |
@@ -51,6 +51,7 @@ From `bashrc`. Aliases work only in an interactive shell; scripts get the plain 
 | `gbda` | delete local branches merged into `main` | uses `git branch -d`; squash-merged branches stay |
 | `gpr <n>` | fetch pull request `<n>` as `pr/<n>`, list its files, browse it in tig | GitHub and Gitea |
 | `gsquash <branch\|n>` | squash a branch or pull request onto an up-to-date `main` as one commit signed with your key | opens the editor (message from the PR title with a number); does not push |
+| `gf <pattern> [dir]` | search files under `dir` (default `.`), narrow the hits in fzf, open the chosen line in Emacs | skips `.git` and binary files; preview shows the lines around; Esc cancels |
 
 Keys: Ctrl-R (history), Ctrl-T (files), Alt-C (directories) come from fzf; up/down search the history
 by what is already typed.

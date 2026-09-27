@@ -57,6 +57,7 @@ PROMPT_COMMAND=__prompt   # set before mise, which adds its own hook
 # --- tools (each only if installed) ---
 command -v mise >/dev/null && eval "$(mise activate bash)"
 [[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]] && . /usr/share/doc/fzf/examples/key-bindings.bash   # fzf from apt: Ctrl-R, Ctrl-T, Alt-C
+gf() { local s; s=$(grep -rnI --exclude-dir=.git -- "${1:?usage: gf <pattern> [dir]}" "${2:-.}" | fzf --delimiter : --preview 'awk -v l={2} "NR >= l - 5 && NR <= l + 15" {1}') || return; emacs -nw "+$(cut -d: -f2 <<<"$s")" "${s%%:*}"; }   # grep, narrow in fzf, open the line in Emacs
 
 # --- aliases (interactive only; scripts are unaffected) ---
 if [[ "$(uname)" == Darwin ]]; then
