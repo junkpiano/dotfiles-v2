@@ -21,6 +21,14 @@
         dired-kill-when-opening-new-dired-buffer t)
 (declare-function dired-hide-details-mode "dired")
 (add-hook 'dired-mode-hook #'dired-hide-details-mode) ; "(" shows sizes and dates
+;; emacs -nw (WSL, SSH): send copies to the system clipboard with OSC 52, which Windows Terminal understands
+(defun my/copy-to-clipboard (text)
+  "Copy TEXT to the system clipboard: the GUI's own way, or OSC 52 in a terminal."
+  (if (display-graphic-p)
+      (gui-select-text text)
+    (send-string-to-terminal
+     (concat "\e]52;c;" (base64-encode-string (encode-coding-string text 'utf-8) t) "\a"))))
+(setq interprogram-cut-function #'my/copy-to-clipboard)
 
 ;; --- Markdown: .md opens read-only and rendered in place (M-x gfm-mode to edit) ---
 (declare-function markdown-toggle-markup-hiding "markdown-mode")
