@@ -26,8 +26,7 @@ shopt -s histappend cmdhist
 
 # --- behavior ---
 shopt -s checkwinsize globstar autocd cdspell dirspell no_empty_cmd_completion
-bind 'set completion-ignore-case on' 'set show-all-if-ambiguous on' 'set mark-symlinked-directories on' 'set colored-stats on'
-bind '"\e[A": history-search-backward' '"\e[B": history-search-forward'   # up/down: search history by what is typed
+if [[ -o emacs || -o vi ]]; then bind 'set completion-ignore-case on' 'set show-all-if-ambiguous on' 'set mark-symlinked-directories on' 'set colored-stats on'; bind '"\e[A": history-search-backward' '"\e[B": history-search-forward'; fi   # only with line editing (M-x shell runs bash --noediting); up/down: search history by what is typed
 
 # --- completion ---
 if ! shopt -oq posix; then
@@ -56,7 +55,7 @@ PROMPT_COMMAND=__prompt   # set before mise, which adds its own hook
 
 # --- tools (each only if installed) ---
 command -v mise >/dev/null && eval "$(mise activate bash)"
-[[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]] && . /usr/share/doc/fzf/examples/key-bindings.bash   # fzf from apt: Ctrl-R, Ctrl-T, Alt-C
+[[ -o emacs || -o vi ]] && [[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]] && . /usr/share/doc/fzf/examples/key-bindings.bash   # fzf from apt: Ctrl-R, Ctrl-T, Alt-C
 gf() { local s; s=$(grep -rnI --exclude-dir=.git -- "${1:?usage: gf <pattern> [dir]}" "${2:-.}" | fzf --delimiter : --preview 'awk -v l={2} "NR >= l - 5 && NR <= l + 15" {1}') || return; emacs -nw "+$(cut -d: -f2 <<<"$s")" "${s%%:*}"; }   # grep, narrow in fzf, open the line in Emacs
 
 # --- aliases (interactive only; scripts are unaffected) ---
