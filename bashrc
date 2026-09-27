@@ -86,13 +86,14 @@ __pr_title() { local u t; u=$(git remote get-url origin)
   if [[ "$u" == *github.com* ]]; then t=$(gh pr view "$1" --json title -q .title 2>/dev/null)
   else t=$(tea pr ls --repo "$(sed -E 's#^.*[:/]([^/]+/[^/]+)$#\1#; s#\.git$##' <<< "$u")" --state all --limit 100 --fields index,title --output tsv 2>/dev/null | awk -F'\t' -v n="$1" '$1==n {print $2; exit}'); fi
   [[ -n "$t" ]] && echo "$t"; }   # no (#n): GitHub would link it to its own issue n
-# gsquash <branch|PR number>: squash it onto an up-to-date main as one commit signed with your key; edit the message; push yourself.
+# gsquash <branch|PR number>: squash it onto an up-to-date main as one commit signed with your key; edit the message; then gship <n>.
 # With a number, the message starts from the PR's title (gh for GitHub, tea for Gitea).
 gsquash() { local ref="${1:-}" title=""; [[ -n "$ref" ]] || { echo "usage: gsquash <branch|PR number>" >&2; return 1; }
   [[ -z "$(git status --porcelain)" ]] || { echo "commit or stash your changes first" >&2; return 1; }
   git switch main && git pull --ff-only || return   # first, so a checked-out pr/N can be fetched again
   if [[ "$ref" =~ ^[0-9]+$ ]]; then git fetch -f origin "pull/$ref/head:pr/$ref" || return; title=$(__pr_title "$ref"); ref="pr/$ref"; fi
   git merge --squash "$ref" && git commit -S -e -m "${title:-$(git log --reverse --format=%s "main..$ref" | head -1)}" -m "$(git log --reverse --format='- %s' "main..$ref")"; }
+gship() { local n="${1:-}" u sha b; [[ "$n" =~ ^[0-9]+$ ]] || { echo "usage: gship <PR number> (on main, after gsquash <n>)" >&2; return 1; }; [[ "$(git branch --show-current)" == main ]] || { echo "gship: run it on main after gsquash" >&2; return 1; }; git push origin main || return; u=$(git remote get-url origin); sha=$(git ls-remote origin "refs/pull/$n/head" | cut -f1); b=$(git ls-remote --heads origin | awk -v s="$sha" 's != "" && $1 == s && $2 != "refs/heads/main" {sub("refs/heads/", "", $2); print $2; exit}'); if [[ "$u" == *github.com* ]]; then gh pr close "$n" --comment "Merged as $(git rev-parse --short HEAD)"; else tea pr close "$n" --repo "$(sed -E 's#^.*[:/]([^/]+/[^/]+)$##; s#\.git$##' <<< "$u")"; fi; git branch -D "pr/$n" 2>/dev/null; [[ -n "$b" ]] && { git branch -D "$b" 2>/dev/null; git push origin --delete "$b"; }; }   # push main, close PR n, delete its branches
 
 # --- per-machine: aliases, then private overrides (neither is in this repo) ---
 if [[ -r "$HOME/.bash_aliases" ]]; then . "$HOME/.bash_aliases"; fi
