@@ -1,6 +1,8 @@
 # dotfiles v2
 
-bash and Emacs, kept small: few dependencies, fast to start, easy to rebuild.
+bash, zsh, and Emacs, kept small: few dependencies, fast to start, easy to rebuild.
+zsh is the default shell on macOS; bash is the default everywhere else (WSL, Raspberry Pi) and
+still fully set up on macOS too, since both rc files are linked on every machine.
 
 ## Requirements
 
@@ -36,7 +38,7 @@ sudo apt install git bash-completion fzf tig gh emacs-mozc-bin
 
 ## Aliases and functions
 
-From `bashrc`. Aliases work only in an interactive shell; scripts get the plain commands.
+From `bashrc`/`zshrc` (kept in sync). Aliases work only in an interactive shell; scripts get the plain commands.
 
 | Name | Does | Notes |
 |------|------|-------|
@@ -56,11 +58,12 @@ From `bashrc`. Aliases work only in an interactive shell; scripts get the plain 
 | `gsquash <branch\|n>` | squash a branch or pull request onto an up-to-date `main` as one commit signed with your key | opens the editor (message from the PR title with a number); does not push; then `gship <n>` |
 | `gship <n>` | after `gsquash <n>`, on `main`: push `main`, mark PR `<n>` merged (Gitea: manually merged with the squash commit; GitHub: closed with a comment), delete its branch here and on the remote | the branch is the one pointing at the PR's head commit, never `main`; Gitea repos need "allow manual merge" on, else the PR is just closed |
 | `gf <pattern> [dir]` | search files under `dir` (default `.`), narrow the hits in fzf, open the chosen line in Emacs | skips `.git` and binary files; preview shows the lines around; Esc cancels |
+| `enw` | `emacs -nw` | Emacs in the terminal |
 
 Keys: Ctrl-R (history), Ctrl-T (files), Alt-C (directories) come from fzf; up/down search the history
 by what is already typed.
 
-## bash (every machine: WSL, Raspberry Pi, macOS)
+## bash (default on WSL and Raspberry Pi; also linked on macOS)
 
 ```sh
 git clone https://github.com/junkpiano/dotfiles-v2.git ~/dotfiles
@@ -72,6 +75,18 @@ chsh -s /bin/bash   # if the login shell is something else
 Try it first without changing anything: `bash --rcfile ~/dotfiles/bashrc`.
 `bashrc` reads `~/.bash_aliases` (per-machine aliases, kept outside this repo)
 and then `~/.bashrc.local` (private, not in git).
+
+## zsh (default on macOS)
+
+```sh
+git clone https://github.com/junkpiano/dotfiles-v2.git ~/dotfiles
+~/dotfiles/link.sh -n   # show what it would do
+~/dotfiles/link.sh      # link bashrc, bash_profile, zshrc and emacs/
+```
+
+`zshrc` covers login and non-login interactive shells on its own (unlike bash, zsh has no
+separate need for a `.zprofile`).
+`zshrc` reads `~/.zsh_aliases`, then `~/.zshrc.local` (both per-machine, kept outside this repo).
 
 ## Emacs (every machine)
 

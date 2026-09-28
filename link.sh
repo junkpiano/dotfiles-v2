@@ -43,4 +43,5 @@ link() {
 
 link bashrc .bashrc
 link bash_profile .bash_profile
+link zshrc .zshrc
 link emacs .emacs.d

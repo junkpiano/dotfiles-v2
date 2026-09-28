@@ -1,8 +1,8 @@
-# -*- mode: sh; sh-shell: bash -*-
-# vim: set filetype=bash:
-# shellcheck shell=bash disable=SC1090,SC1091
+# -*- mode: sh; sh-shell: zsh -*-
+# vim: set filetype=zsh:
+# shellcheck shell=bash disable=SC1090,SC1091,SC2296
 
-[[ -n "$BASH_VERSION" && $- == *i* ]] || return   # scripts, scp, and non-bash shells that source this by mistake: nothing below applies
+[[ -n "$ZSH_VERSION" && -o interactive ]] || return   # scripts and non-zsh shells that source this by mistake: nothing below applies
 
 # --- environment ---
 export LANG=en_US.UTF-8
@@ -18,43 +18,44 @@ for f in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linu
   if [[ -x "$f" ]]; then eval "$("$f" shellenv)"; break; fi
 done
 
-# --- history: big, shared across terminals, with timestamps ---
-HISTSIZE=50000 HISTFILESIZE=100000
-HISTCONTROL=ignoreboth:erasedups HISTTIMEFORMAT='%F %T '
-shopt -s histappend cmdhist
+# --- history: big, shared live across terminals, with timestamps ---
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000 SAVEHIST=100000
+setopt EXTENDED_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE HIST_REDUCE_BLANKS HIST_VERIFY
+setopt APPEND_HISTORY SHARE_HISTORY   # SHARE_HISTORY writes and reloads live, replacing bash's manual `history -a` in the prompt
 
 # --- behavior ---
-shopt -s checkwinsize globstar autocd cdspell dirspell no_empty_cmd_completion 2>/dev/null   # globstar/autocd/dirspell need bash 4+; macOS's stock /bin/bash is 3.2
-if [[ -o emacs || -o vi ]]; then bind 'set completion-ignore-case on' 'set show-all-if-ambiguous on' 'set mark-symlinked-directories on' 'set colored-stats on'; bind '"\e[A": history-search-backward' '"\e[B": history-search-forward'; fi   # only with line editing (M-x shell runs bash --noediting); up/down: search history by what is typed
+setopt AUTO_CD CORRECT   # cd by typing a dir name; spelling-correct commands (bash's cdspell/dirspell, approximately)
+zstyle ':completion:*' completer _complete _correct _approximate   # tolerate typos in completion too
+# globstar's `**` glob works in zsh without an option; checkwinsize and no_empty_cmd_completion don't apply here.
 
-# --- completion ---
-if ! shopt -oq posix; then
-  for f in /usr/share/bash-completion/bash_completion /etc/bash_completion \
-           "${HOMEBREW_PREFIX:-/nonexistent}/etc/profile.d/bash_completion.sh"; do
-    if [[ -r "$f" ]]; then . "$f"; break; fi
-  done
+if [[ -o emacs || -o vi ]]; then   # only with line editing (M-x shell runs zsh -f); up/down: search history by what is typed
+  zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'   # completion-ignore-case
+  zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"     # colored-stats
+  setopt AUTO_MENU MARK_DIRS                                  # show-all-if-ambiguous, mark-symlinked-directories
+  bindkey '^[[A' history-search-backward '^[[B' history-search-forward
 fi
 
+# --- completion ---
+if [[ -n "$HOMEBREW_PREFIX" ]]; then fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath); fi
+autoload -Uz compinit && compinit -C
+
 # --- prompt: host:dir (branch*=) $   (exit status in red when non-zero) ---
-for f in /usr/lib/git-core/git-sh-prompt "${HOMEBREW_PREFIX:-/nonexistent}/etc/bash_completion.d/git-prompt.sh"; do
-  if [[ -r "$f" ]]; then . "$f"; break; fi
-done
-unset f
-# shellcheck disable=SC2034  # read by __git_ps1
-GIT_PS1_SHOWDIRTYSTATE=1 GIT_PS1_SHOWUPSTREAM=auto
-__prompt() {
-  local status=$? branch=''
-  declare -F __git_ps1 >/dev/null && branch=$(__git_ps1 ' (%s)')
-  PS1='\[\e[36m\]\h\[\e[0m\]:\[\e[34m\]\w\[\e[33m\]'"$branch"'\[\e[0m\] '
-  (( status != 0 )) && PS1+='\[\e[31m\]'"$status"'\[\e[0m\] '
-  PS1+='\$ '
-  history -a   # write each command right away, so other terminals can load it
-}
-PROMPT_COMMAND=__prompt   # set before mise, which adds its own hook
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' unstagedstr '*' stagedstr '+'
+zstyle ':vcs_info:git:*' formats ' (%b%c%u)'
+precmd() { vcs_info }
+setopt PROMPT_SUBST
+PROMPT='%F{cyan}%m%f:%F{blue}%~%f%F{yellow}${vcs_info_msg_0_}%f %(?..%F{red}%?%f )%# '
 
 # --- tools (each only if installed) ---
-command -v mise >/dev/null && eval "$(mise activate bash)"
-[[ -o emacs || -o vi ]] && [[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]] && . /usr/share/doc/fzf/examples/key-bindings.bash   # fzf from apt: Ctrl-R, Ctrl-T, Alt-C
+command -v mise >/dev/null && eval "$(mise activate zsh)"
+if [[ -o emacs || -o vi ]]; then
+  for f in /usr/share/doc/fzf/examples/key-bindings.zsh "${HOMEBREW_PREFIX:-/nonexistent}/opt/fzf/shell/key-bindings.zsh"; do
+    [[ -r "$f" ]] && { . "$f"; break; }
+  done
+fi
 gf() { local s; s=$(grep -rnI --exclude-dir=.git -- "${1:?usage: gf <pattern> [dir]}" "${2:-.}" | fzf --delimiter : --preview 'awk -v l={2} "NR >= l - 5 && NR <= l + 15" {1}') || return; emacs -nw "+$(cut -d: -f2 <<<"$s")" "${s%%:*}"; }   # grep, narrow in fzf, open the line in Emacs
 
 # --- aliases (interactive only; scripts are unaffected) ---
@@ -69,7 +70,7 @@ alias cp='cp -i' mv='mv -i' grep='grep --color=auto' enw='emacs -nw'
 
 # --- git, with oh-my-zsh's names; extra options pass through (ggpush --force-with-lease) ---
 alias gst='git status -sb' gco='git checkout' gc='git commit' gc!='git commit --amend'   # gst: short, with the branch and ahead/behind
-if [[ -r /usr/share/bash-completion/completions/git ]]; then . /usr/share/bash-completion/completions/git; __git_complete gco _git_checkout; __git_complete gc _git_commit; __git_complete gc! _git_commit; fi # Tab after gco: branch names; after gc, gc!: options
+compdef gco=git-checkout gc=git-commit 'gc!'=git-commit 2>/dev/null   # Tab after gco: branch names; after gc, gc!: options
 gbda() { git branch --merged main | grep -vE '^[*+]|^ *main$' | xargs -r git branch -d; }   # delete branches merged into main (not squash-merged ones)
 __git_branch() { git symbolic-ref --quiet --short HEAD || { echo "not on a branch" >&2; return 1; }; }
 ggpush() { local b; b=$(__git_branch) || return; git push -u origin "$b" "$@"; }        # -u: track on first push
@@ -94,5 +95,5 @@ gsquash() { local ref="${1:-}" title=""; [[ -n "$ref" ]] || { echo "usage: gsqua
 gship() { local n="${1:-}" u sha b; [[ "$n" =~ ^[0-9]+$ ]] || { echo "usage: gship <PR number> (on main, after gsquash <n>)" >&2; return 1; }; [[ "$(git branch --show-current)" == main ]] || { echo "gship: run it on main after gsquash" >&2; return 1; }; git push origin main || return; u=$(git remote get-url origin); sha=$(git ls-remote origin "refs/pull/$n/head" | cut -f1); b=$(git ls-remote --heads origin | awk -v s="$sha" 's != "" && $1 == s && $2 != "refs/heads/main" {sub("refs/heads/", "", $2); print $2; exit}'); if [[ "$u" == *github.com* ]]; then gh pr close "$n" --comment "Merged as $(git rev-parse --short HEAD)"; else tea api -X POST "repos/{owner}/{repo}/pulls/$n/merge" -f Do=manually-merged -f merge_commit_id="$(git rev-parse HEAD)" >/dev/null || tea pr close "$n" --repo "$(sed -E 's#^.*[:/]([^/]+/[^/]+)$#\1#; s#\.git$##' <<< "$u")"; fi; git branch -D "pr/$n" 2>/dev/null; [[ -n "$b" ]] && { git branch -D "$b" 2>/dev/null; git push origin --delete "$b"; }; }   # push main, mark PR n merged (Gitea) or close it (GitHub), delete its branches
 
 # --- per-machine: aliases, then private overrides (neither is in this repo) ---
-if [[ -r "$HOME/.bash_aliases" ]]; then . "$HOME/.bash_aliases"; fi
-if [[ -r "$HOME/.bashrc.local" ]]; then . "$HOME/.bashrc.local"; fi
+if [[ -r "$HOME/.zsh_aliases" ]]; then . "$HOME/.zsh_aliases"; fi
+if [[ -r "$HOME/.zshrc.local" ]]; then . "$HOME/.zshrc.local"; fi
