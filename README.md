@@ -16,7 +16,7 @@ breaks, but the feature in the second column needs it.
 | fzf | Ctrl-R history, Ctrl-T files, Alt-C dirs; `gf` | `sudo apt install fzf` | `brew install fzf` |
 | tig | browsing history; `gpr` (falls back to `git log -p`) | `sudo apt install tig` | `brew install tig` |
 | tea | Gitea from the shell: pull requests, issues, repositories; PR titles for `gsquash <n>` | release binary from gitea.com (see below) | `brew install tea` |
-| gh | GitHub from the shell; PR titles for `gsquash <n>` on GitHub remotes | `sudo apt install gh`, then `gh auth login` | `brew install gh`, then `gh auth login` |
+| gh | GitHub from the shell; PR titles for `gsquash <n>` on GitHub remotes | GitHub's apt repository (see below), then `gh auth login` | `brew install gh`, then `gh auth login` |
 | mise | node and rust versions | `curl https://mise.run \| sh` | `brew install mise` |
 | Emacs 30 or later | `emacs/` (uses built-in `which-key`) | | `brew install --cask emacs-app` |
 | emacs-mozc-bin | Japanese input in Emacs (`C-\`) | `sudo apt install emacs-mozc-bin` | N/A |
@@ -25,13 +25,27 @@ breaks, but the feature in the second column needs it.
 All at once on Debian / Ubuntu:
 
 ```sh
-sudo apt install git bash-completion fzf tig gh emacs-mozc-bin
+sudo apt install git bash-completion fzf tig emacs-mozc-bin
 ```
 
 - tea is not in apt (the apt package `tea` is an unrelated text editor). Get `tea-<version>-linux-amd64.xz`
   (or `-arm64` on a Pi) from https://gitea.com/gitea/tea/releases, check it against its `.sha256`,
   and put it in `~/.local/bin/tea`. Then `tea login add --name home --url https://<your-gitea>`
   (it asks for a token with write access to repositories).
+- gh from apt is old (2.4 on Ubuntu 22.04). Add GitHub's own apt repository instead
+  (https://github.com/cli/cli/blob/trunk/docs/install_linux.md#debian); `apt upgrade` then keeps it current:
+
+  ```sh
+  (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+      && sudo mkdir -p -m 755 /etc/apt/keyrings \
+      && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+      && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+      && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+      && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+      && sudo apt update \
+      && sudo apt install gh -y
+  ```
 - Ubuntu 24.04's fzf (0.44) has no `fzf --bash`; `bashrc` then loads the key bindings from
   `/usr/share/doc/fzf/examples/key-bindings.bash`, which the apt package ships.
 - Emacs installs its own two packages (`markdown-mode`, `mozc`) from MELPA on the first start.
