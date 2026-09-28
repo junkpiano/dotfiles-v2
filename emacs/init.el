@@ -10,6 +10,7 @@
 (setopt use-package-always-defer t)
 
 ;; --- built-ins ---
+(load-theme 'wombat t)                   ; built-in soft dark theme: gray background, muted colors
 (fido-vertical-mode 1)                   ; vertical candidates for C-x C-f, M-x, C-x b
 (which-key-mode 1)                       ; after a prefix key, show what comes next
 (recentf-mode 1)                         ; M-x recentf-open: files opened before

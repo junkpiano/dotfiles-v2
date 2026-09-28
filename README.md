@@ -92,6 +92,7 @@ separate need for a `.zprofile`).
 
 A minimal Emacs 30 setup for reading files: built-ins first, only `markdown-mode` and `mozc` from MELPA,
 installed on the first start. `.md` opens read-only and rendered; `M-x gfm-mode` to edit.
+The theme is the built-in `wombat`: dark gray, muted colors.
 
 `link.sh` links `~/.emacs.d` too.
 
