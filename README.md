@@ -9,18 +9,18 @@ still fully set up on macOS too, since both rc files are linked on every machine
 The bash and Emacs setups expect these tools. `bashrc` skips a tool that is missing, so nothing
 breaks, but the feature in the second column needs it.
 
-| Tool | Used for | Debian / Ubuntu |
-|------|----------|-----------------|
-| git | everything; the branch in the prompt (`git-sh-prompt`) | `sudo apt install git` |
-| bash-completion | Tab completion, branch names after `gco` | `sudo apt install bash-completion` |
-| fzf | Ctrl-R history, Ctrl-T files, Alt-C dirs; `gf` | `sudo apt install fzf` |
-| tig | browsing history; `gpr` (falls back to `git log -p`) | `sudo apt install tig` |
-| tea | Gitea from the shell: pull requests, issues, repositories; PR titles for `gsquash <n>` | release binary from gitea.com (see below) |
-| gh | GitHub from the shell; PR titles for `gsquash <n>` on GitHub remotes | `sudo apt install gh`, then `gh auth login` |
-| mise | node and rust versions | `curl https://mise.run \| sh` |
-| Emacs 30 or later | `emacs/` (uses built-in `which-key`) | |
-| emacs-mozc-bin | Japanese input in Emacs (`C-\`) | `sudo apt install emacs-mozc-bin` |
-| Fonts | Ricty Diminished, Noto Sans Mono CJK JP, Noto Color Emoji (GUI Emacs only) | |
+| Tool | Used for | Debian / Ubuntu | macOS (Homebrew) |
+|------|----------|-----------------|------------------|
+| git | everything; the branch in the prompt (`git-sh-prompt`) | `sudo apt install git` | `brew install git` (the prompt script comes with it) |
+| bash-completion | Tab completion, branch names after `gco` | `sudo apt install bash-completion` | N/A: zsh, the default shell on macOS, has its own completion |
+| fzf | Ctrl-R history, Ctrl-T files, Alt-C dirs; `gf` | `sudo apt install fzf` | `brew install fzf` |
+| tig | browsing history; `gpr` (falls back to `git log -p`) | `sudo apt install tig` | `brew install tig` |
+| tea | Gitea from the shell: pull requests, issues, repositories; PR titles for `gsquash <n>` | release binary from gitea.com (see below) | `brew install tea` |
+| gh | GitHub from the shell; PR titles for `gsquash <n>` on GitHub remotes | `sudo apt install gh`, then `gh auth login` | `brew install gh`, then `gh auth login` |
+| mise | node and rust versions | `curl https://mise.run \| sh` | `brew install mise` |
+| Emacs 30 or later | `emacs/` (uses built-in `which-key`) | | `brew install --cask emacs-app` |
+| emacs-mozc-bin | Japanese input in Emacs (`C-\`) | `sudo apt install emacs-mozc-bin` | N/A |
+| Fonts | Ricty Diminished, Noto Sans Mono CJK JP, Noto Color Emoji (GUI Emacs only) | `sudo apt install fonts-ricty-diminished fonts-noto-cjk fonts-noto-color-emoji` | `brew install --cask font-ricty-diminished font-noto-sans-mono-cjk-jp` (emoji: the built-in Apple Color Emoji) |
 
 All at once on Debian / Ubuntu:
 
