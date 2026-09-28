@@ -14,7 +14,7 @@ path_prepend() { [[ -d "$1" && ":$PATH:" != *":$1:"* ]] && PATH="$1:$PATH"; }
 for f in "$HOME/.local/bin" "$HOME/bin" "$HOME/.bun/bin" "$HOME/.opencode/bin"; do path_prepend "$f"; done
 export PATH
 
-for f in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+for f in /opt/homebrew/bin/brew /usr/local/bin/brew; do   # Homebrew on macOS only (Apple silicon, Intel)
   if [[ -x "$f" ]]; then eval "$("$f" shellenv)"; break; fi
 done
 
