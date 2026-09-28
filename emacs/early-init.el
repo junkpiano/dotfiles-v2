@@ -13,3 +13,6 @@
 (setq make-backup-files nil
       auto-save-default nil
       create-lockfiles nil)
+
+;; Custom writes to its own file, not into init.el (which is in git); settings belong in init.el, so it is not loaded
+(setq custom-file (locate-user-emacs-file "custom.el"))

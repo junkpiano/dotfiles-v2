@@ -2,7 +2,8 @@
 elpa/
 eln-cache/
 auto-save-list/
-package-quickstart.el
+package-quickstart.el*
+custom.el
 recentf
 places
 history
