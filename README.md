@@ -48,7 +48,7 @@ sudo apt install git bash-completion fzf tig emacs-mozc-bin
   ```
 - Ubuntu 24.04's fzf (0.44) has no `fzf --bash`; `bashrc` then loads the key bindings from
   `/usr/share/doc/fzf/examples/key-bindings.bash`, which the apt package ships.
-- Emacs installs its own two packages (`markdown-mode`, `mozc`) from MELPA on the first start.
+- Emacs installs its own three packages (`markdown-mode`, `mozc`, `go-mode`) from MELPA on the first start.
 
 ## Aliases and functions
 
@@ -104,8 +104,9 @@ separate need for a `.zprofile`).
 
 ## Emacs (every machine)
 
-A minimal Emacs 30 setup for reading files: built-ins first, only `markdown-mode` and `mozc` from MELPA,
+A minimal Emacs 30 setup for reading files: built-ins first, only `markdown-mode`, `mozc` and `go-mode` from MELPA,
 installed on the first start. `.md` opens read-only and rendered; `M-x gfm-mode` to edit.
+`.go` opens in `go-mode` (highlighting and indentation; no Go toolchain needed).
 The theme is the built-in `wombat`: dark gray, muted colors.
 
 `link.sh` links `~/.emacs.d` too.

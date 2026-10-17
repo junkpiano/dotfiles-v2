@@ -3,7 +3,7 @@
 ;; The only packages. A fresh machine installs them on first start; nothing loads until it is used.
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(dolist (p '(markdown-mode mozc))
+(dolist (p '(markdown-mode mozc go-mode)) ; go-mode needs no setup: its autoloads open .go files
   (unless (package-installed-p p)
     (unless package-archive-contents (package-refresh-contents))
     (package-install p)))
